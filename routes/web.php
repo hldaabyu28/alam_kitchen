@@ -3,6 +3,11 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\MenuCategoryController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -21,6 +26,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/' , [LandingController::class, 'index'])->name('landing');
 });
 
+// Public order checkout (no auth required)
+Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+
 Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
@@ -34,22 +42,34 @@ Route::post('/logout', [LoginController::class, 'logout'])
 // Super Admin
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super_admin.')->group(function () {
     Route::get('/dashboard', fn () => view('super_admin.dashboard'))->name('dashboard');
-    // Route::resource('users', UserController::class);
-    // Route::resource('products', ProductController::class);
+    Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
+    Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
+    Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 // Admin
 Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
-    // Route::resource('products', ProductController::class);
-    // Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+    Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
+    Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
+    Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 // Kasir
 Route::middleware(['auth', 'role:kasir,admin,super_admin'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/dashboard', fn () => view('kasir.dashboard'))->name('dashboard');
-    // Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
-    // Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+    Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
+    Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 /*

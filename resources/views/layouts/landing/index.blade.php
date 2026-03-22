@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Alam Kitchen | @yield('title')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 
@@ -181,6 +182,66 @@
                     Checkout
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl max-w-md w-full p-6 sm:p-8 transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto"
+            id="checkout-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold">Checkout</h3>
+                <button onclick="closeCheckoutModal()" class="text-2xl hover:text-orange-500 transition">&times;</button>
+            </div>
+
+            <form id="checkout-form" method="POST" action="{{ route('order.store') }}" class="space-y-4">
+                @csrf
+                <input type="hidden" id="checkout-items-json" name="items_json" />
+
+                <div>
+                    <label class="block text-sm mb-2">Nama Lengkap *</label>
+                    <input type="text" name="customer_name" required
+                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Nama Anda">
+                </div>
+
+                <div>
+                    <label class="block text-sm mb-2">Email *</label>
+                    <input type="email" name="customer_email" required
+                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="email@contoh.com">
+                </div>
+
+                <div>
+                    <label class="block text-sm mb-2">No. Telepon *</label>
+                    <input type="tel" name="customer_phone" required
+                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="08xxxxxxxxxx">
+                </div>
+
+                <div>
+                    <label class="block text-sm mb-2">Waktu Pengambilan *</label>
+                    <input type="datetime-local" name="pickup_time" required
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm mb-2">Catatan (Opsional)</label>
+                    <textarea name="notes" rows="2"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Catatan tambahan..."></textarea>
+                </div>
+
+                <div id="checkout-summary" class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 space-y-2">
+                    <!-- Will be populated by JS -->
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-orange-500 text-white py-3 rounded-full hover:bg-orange-600 transition font-semibold">
+                    Pesan Sekarang
+                </button>
+            </form>
         </div>
     </div>
 
@@ -463,72 +524,17 @@
             easing: 'ease-out'
         });
 
-        // Dishes Data
-        const dishes = [{
-                id: 1,
-                name: "Mapo Tofu Stir Fry",
-                description: "Spicy Korean style tofu with ground beef",
-                price: 29.99,
-                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-                category: "Asian"
-            },
-            {
-                id: 2,
-                name: "Grilled Chicken Breast",
-                description: "Served with crispy french fries",
-                price: 25.99,
-                image: "https://images.unsplash.com/photo-1603079846950-4f7e3c3f75e0",
-                category: "Western"
-            },
-            {
-                id: 3,
-                name: "Pasta Tomato Delight",
-                description: "Fresh tomato pasta with herbs",
-                price: 18.99,
-                image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9",
-                category: "Italian"
-            },
-            {
-                id: 4,
-                name: "Shrimp Tempura",
-                description: "Crispy tempura shrimp with sauce",
-                price: 42.99,
-                image: "https://images.unsplash.com/photo-1604908176997-43143d08bbd3",
-                category: "Japanese"
-            },
-            {
-                id: 5,
-                name: "Beef Burger Deluxe",
-                description: "Juicy beef patty with cheese",
-                price: 22.99,
-                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
-                category: "Western"
-            },
-            {
-                id: 6,
-                name: "Caesar Salad",
-                description: "Fresh romaine with caesar dressing",
-                price: 14.99,
-                image: "https://images.unsplash.com/photo-1546793665-c74683f339c1",
-                category: "Salad"
-            },
-            {
-                id: 7,
-                name: "Salmon Teriyaki",
-                description: "Grilled salmon with teriyaki glaze",
-                price: 38.99,
-                image: "https://images.unsplash.com/photo-1580476262798-bddd9f4b7369",
-                category: "Japanese"
-            },
-            {
-                id: 8,
-                name: "Margherita Pizza",
-                description: "Classic pizza with fresh mozzarella",
-                price: 24.99,
-                image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002",
-                category: "Italian"
-            }
-        ];
+        // Dishes Data (from database)
+        const dishes = @json($menus).map(menu => ({
+            id: menu.id,
+            name: menu.name,
+            description: menu.description || '',
+            price: parseFloat(menu.price),
+            discountPrice: menu.discount_price ? parseFloat(menu.discount_price) : null,
+            image: menu.image ? '/storage/' + menu.image : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+            category: menu.category ? menu.category.name : 'Uncategorized',
+            isSpecial: menu.is_special,
+        }));
 
         // Cart Management
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -552,7 +558,7 @@
                         <h3 class="font-semibold mb-2 text-base sm:text-lg">${dish.name}</h3>
                         <p class="text-xs sm:text-sm opacity-70 mb-3 line-clamp-2">${dish.description}</p>
                         <div class="flex justify-between items-center">
-                            <span class="font-bold text-lg sm:text-xl">$${dish.price.toFixed(2)}</span>
+                            <span class="font-bold text-lg sm:text-xl">Rp ${dish.price.toLocaleString('id-ID')}</span>
                             <button
                                 onclick="addToCart(${dish.id})"
                                 class="border-2 border-black dark:border-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition">
@@ -612,9 +618,9 @@
             const cartTotal = document.getElementById('cart-total');
 
             if (cart.length === 0) {
-                cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Your cart is empty</p>';
+                cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Keranjang kosong</p>';
                 cartCount.classList.add('hidden');
-                cartTotal.textContent = '$0.00';
+                cartTotal.textContent = 'Rp 0';
                 return;
             }
 
@@ -631,7 +637,7 @@
                         <img src="${item.image}" class="w-20 h-20 rounded-xl object-cover" alt="${item.name}" />
                         <div class="flex-1">
                             <h4 class="font-semibold text-sm mb-1">${item.name}</h4>
-                            <p class="text-orange-500 font-bold">$${item.price.toFixed(2)}</p>
+                            <p class="text-orange-500 font-bold">Rp ${item.price.toLocaleString('id-ID')}</p>
                             <div class="flex items-center gap-2 mt-2">
                                 <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center justify-center text-sm">-</button>
                                 <span class="text-sm font-semibold">${item.quantity}</span>
@@ -648,7 +654,7 @@
             cartCount.textContent = itemCount;
             cartCount.classList.remove('hidden');
             cartCount.classList.add('cart-badge');
-            cartTotal.textContent = `$${total.toFixed(2)}`;
+            cartTotal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
 
             setTimeout(() => {
                 cartCount.classList.remove('cart-badge');
@@ -674,26 +680,110 @@
             }
         }
 
-        // Checkout
         function checkout() {
             if (cart.length === 0) {
-                showNotification('Your cart is empty!', 'error');
+                showNotification('Keranjang kosong!', 'error');
                 return;
             }
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-            alert(
-                `Checkout Summary:\n\nTotal Items: ${itemCount}\nTotal Amount: $${total.toFixed(2)}\n\nThank you for your order!`
-            );
-
-            cart = [];
-            updateCart();
-            saveCart();
-            toggleCart();
-            showNotification('Order placed successfully!');
+            openCheckoutModal();
         }
+
+        // Checkout Modal
+        function openCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('checkout-modal-content');
+
+            // Build summary
+            const summaryEl = document.getElementById('checkout-summary');
+            let summaryHtml = '<p class="font-semibold text-sm mb-2">Ringkasan Pesanan:</p>';
+            let total = 0;
+
+            cart.forEach(item => {
+                const sub = item.price * item.quantity;
+                total += sub;
+                summaryHtml += `<div class="flex justify-between text-sm">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>Rp ${sub.toLocaleString('id-ID')}</span>
+                </div>`;
+            });
+
+            summaryHtml += `<div class="flex justify-between font-bold text-sm border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                <span>Total</span>
+                <span>Rp ${total.toLocaleString('id-ID')}</span>
+            </div>`;
+
+            summaryEl.innerHTML = summaryHtml;
+
+            // Build items data for hidden field
+            const itemsData = cart.map(item => ({
+                menu_id: item.id,
+                quantity: item.quantity,
+                notes: null
+            }));
+
+            // We need to create hidden inputs for each item
+            // Remove existing dynamic item inputs
+            document.querySelectorAll('.checkout-item-input').forEach(el => el.remove());
+
+            const form = document.getElementById('checkout-form');
+            itemsData.forEach((item, index) => {
+                const menuInput = document.createElement('input');
+                menuInput.type = 'hidden';
+                menuInput.name = `items[${index}][menu_id]`;
+                menuInput.value = item.menu_id;
+                menuInput.className = 'checkout-item-input';
+                form.appendChild(menuInput);
+
+                const qtyInput = document.createElement('input');
+                qtyInput.type = 'hidden';
+                qtyInput.name = `items[${index}][quantity]`;
+                qtyInput.value = item.quantity;
+                qtyInput.className = 'checkout-item-input';
+                form.appendChild(qtyInput);
+            });
+
+            // Set minimum pickup time to now + 30 min
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + 30);
+            const pad = n => String(n).padStart(2, '0');
+            const minTime = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            document.querySelector('input[name="pickup_time"]').setAttribute('min', minTime);
+
+            // Close cart sidebar first
+            const cartSidebar = document.getElementById('cart-sidebar');
+            if (!cartSidebar.classList.contains('translate-x-full')) {
+                toggleCart();
+            }
+
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('checkout-modal-content');
+
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }, 200);
+        }
+
+        // On form submission, clear cart from localStorage immediately
+        document.getElementById('checkout-form').addEventListener('submit', function() {
+            cart = [];
+            localStorage.removeItem('cart');
+        });
 
         // Booking Modal
         function openBookingModal() {
@@ -803,6 +893,7 @@
         // Close all modals
         function closeAllModals() {
             closeBookingModal();
+            closeCheckoutModal();
             const cartSidebar = document.getElementById('cart-sidebar');
             if (!cartSidebar.classList.contains('translate-x-full')) {
                 toggleCart();

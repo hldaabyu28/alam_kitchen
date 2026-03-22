@@ -51,6 +51,8 @@ return new class extends Migration
                 'expired',
                 'refunded',
             ])->default('unpaid');
+            $table->string('payment_method')->default('cash');
+
 
             // Waktu estimasi & selesai
             $table->dateTime('estimated_ready_at')->nullable();
