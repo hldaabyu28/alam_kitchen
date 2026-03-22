@@ -244,73 +244,172 @@
             </form>
         </div>
     </div>
-
-    <!-- Booking Modal -->
+    <!-- Booking + Pre-Order Modal -->
     <div id="booking-modal"
         class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-900 rounded-3xl max-w-md w-full p-6 sm:p-8 transform scale-95 transition-transform duration-300"
+        <div class="bg-white dark:bg-gray-900 rounded-3xl max-w-3xl w-full p-6 sm:p-8 transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto"
             id="booking-modal-content">
+
+            <!-- Header -->
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold">Book a Table</h3>
+                <div>
+                    <h3 class="text-2xl font-semibold" id="booking-title">Book a Table</h3>
+                    <p class="text-sm text-gray-500 mt-1" id="booking-subtitle">Step 1 of 2 — Reservation Details</p>
+                </div>
                 <button onclick="closeBookingModal()" class="text-2xl hover:text-orange-500 transition">&times;</button>
             </div>
 
-            <form id="booking-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm mb-2">Full Name</label>
-                    <input type="text" id="booking-name" required
-                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
+            <!-- Step indicator -->
+            <div class="flex gap-2 mb-6">
+                <div id="step-bar-1" class="flex-1 h-1.5 rounded-full bg-orange-500 transition-all"></div>
+                <div id="step-bar-2" class="flex-1 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 transition-all"></div>
+            </div>
 
-                <div>
-                    <label class="block text-sm mb-2">Email</label>
-                    <input type="email" id="booking-email" required
-                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+            @if (session('booking_error'))
+                <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-4 py-3 rounded-2xl mb-4 text-sm">
+                    {{ session('booking_error') }}
                 </div>
+            @endif
 
-                <div>
-                    <label class="block text-sm mb-2">Phone Number</label>
-                    <input type="tel" id="booking-phone" required
-                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
+            <form id="booking-form" method="POST" action="{{ route('reservation.guest.store') }}">
+                @csrf
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm mb-2">Date</label>
-                        <input type="date" id="booking-date" required
-                            class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <!-- ========== STEP 1: Reservation Details ========== -->
+                <div id="booking-step-1" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nama Lengkap *</label>
+                            <input type="text" name="customer_name" id="rsv-name" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Nama Anda" value="{{ old('customer_name') }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">No. Telepon *</label>
+                            <input type="tel" name="customer_phone" id="rsv-phone" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="08xxxxxxxxxx" value="{{ old('customer_phone') }}">
+                        </div>
                     </div>
+
                     <div>
-                        <label class="block text-sm mb-2">Time</label>
-                        <input type="time" id="booking-time" required
-                            class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <label class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" name="customer_email"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="email@example.com" value="{{ old('customer_email') }}">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Tanggal *</label>
+                            <input type="date" name="reservation_date" id="rsv-date" required min="{{ date('Y-m-d') }}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                value="{{ old('reservation_date') }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Waktu *</label>
+                            <input type="time" name="reservation_time_slot" id="rsv-time" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                value="{{ old('reservation_time_slot') }}">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Jumlah Tamu *</label>
+                            <input type="number" name="guest_count" id="rsv-guests" required min="1" value="{{ old('guest_count', 2) }}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Meja *</label>
+                            <select name="table_id" id="rsv-table" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="">Pilih meja</option>
+                                @foreach ($tables as $table)
+                                    <option value="{{ $table->id }}" {{ old('table_id') == $table->id ? 'selected' : '' }}>
+                                        #{{ $table->table_number }} ({{ $table->capacity }} pax)
+                                        {{ $table->location ? '- ' . $table->location : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Permintaan Khusus</label>
+                        <textarea name="special_requests" rows="2"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Alergi, preferensi tempat duduk...">{{ old('special_requests') }}</textarea>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="goToStep2()"
+                            class="flex-1 bg-orange-500 text-white py-3 rounded-full hover:bg-orange-600 transition font-semibold">
+                            🍽️ Lanjut — Pre-Order Menu
+                        </button>
+                        <button type="submit"
+                            class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition font-semibold text-sm">
+                            Hanya Reservasi
+                        </button>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm mb-2">Number of Guests</label>
-                    <select id="booking-guests" required
-                        class="w-full px-4 py-3 rounded-full border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="">Select guests</option>
-                        <option value="1">1 Guest</option>
-                        <option value="2">2 Guests</option>
-                        <option value="3">3 Guests</option>
-                        <option value="4">4 Guests</option>
-                        <option value="5">5 Guests</option>
-                        <option value="6">6+ Guests</option>
-                    </select>
-                </div>
+                <!-- ========== STEP 2: Pre-Order Menu ========== -->
+                <div id="booking-step-2" class="hidden">
+                    <!-- Category Filter -->
+                    <div class="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+                        <button type="button" onclick="filterBookingMenu('all')"
+                            class="booking-cat-btn active-cat px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-600 whitespace-nowrap transition"
+                            data-cat="all">Semua</button>
+                        @foreach ($categories as $cat)
+                            <button type="button" onclick="filterBookingMenu('{{ $cat->name }}')"
+                                class="booking-cat-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-600 whitespace-nowrap transition"
+                                data-cat="{{ $cat->name }}">{{ $cat->name }}</button>
+                        @endforeach
+                    </div>
 
-                <div>
-                    <label class="block text-sm mb-2">Special Requests (Optional)</label>
-                    <textarea id="booking-requests" rows="3"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"></textarea>
-                </div>
+                    <!-- Menu Grid -->
+                    <div id="booking-menu-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[40vh] overflow-y-auto pr-1 mb-4">
+                        @foreach ($menus as $menu)
+                            <div class="booking-menu-item bg-gray-50 dark:bg-gray-800 rounded-2xl p-3 transition hover:shadow-md cursor-pointer"
+                                data-category="{{ $menu->category ? $menu->category->name : 'Uncategorized' }}"
+                                data-id="{{ $menu->id }}"
+                                data-name="{{ $menu->name }}"
+                                data-price="{{ $menu->price }}"
+                                onclick="addBookingItem({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})">
+                                <img src="{{ $menu->image ? asset('storage/' . $menu->image) : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c' }}"
+                                    class="w-full h-20 object-cover rounded-xl mb-2" alt="{{ $menu->name }}">
+                                <p class="text-xs font-semibold leading-tight mb-1 line-clamp-2">{{ $menu->name }}</p>
+                                <p class="text-xs text-orange-500 font-bold">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                            </div>
+                        @endforeach
+                    </div>
 
-                <button type="submit"
-                    class="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-full hover:scale-105 transition font-semibold">
-                    Confirm Booking
-                </button>
+                    <!-- Pre-Order Cart -->
+                    <div id="booking-order-summary" class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-4">
+                        <h4 class="font-semibold text-sm mb-2">📋 Pre-Order Anda</h4>
+                        <div id="booking-order-items" class="space-y-2 text-sm">
+                            <p class="text-gray-400 text-center py-2" id="booking-empty-msg">Belum ada item — klik menu di atas untuk menambahkan</p>
+                        </div>
+                        <div id="booking-order-total" class="hidden border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 flex justify-between font-bold">
+                            <span>Total</span>
+                            <span id="booking-total-value">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden inputs for items -->
+                    <div id="booking-items-inputs"></div>
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="goToStep1()"
+                            class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition font-semibold text-sm">
+                            ← Kembali
+                        </button>
+                        <button type="submit"
+                            class="flex-1 bg-orange-500 text-white py-3 rounded-full hover:bg-orange-600 transition font-semibold">
+                            ✅ Konfirmasi Reservasi & Pesanan
+                        </button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -798,10 +897,6 @@
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
             }, 10);
-
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('booking-date').setAttribute('min', today);
         }
 
         function closeBookingModal() {
@@ -818,35 +913,149 @@
             }, 200);
         }
 
-        // Booking Form Submit
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // ========== Multi-step Booking ==========
+        let bookingCart = []; // [{id, name, price, quantity}]
 
-            const formData = {
-                name: document.getElementById('booking-name').value,
-                email: document.getElementById('booking-email').value,
-                phone: document.getElementById('booking-phone').value,
-                date: document.getElementById('booking-date').value,
-                time: document.getElementById('booking-time').value,
-                guests: document.getElementById('booking-guests').value,
-                requests: document.getElementById('booking-requests').value
-            };
+        function goToStep2() {
+            // Validate step 1 required fields
+            const name = document.getElementById('rsv-name');
+            const phone = document.getElementById('rsv-phone');
+            const date = document.getElementById('rsv-date');
+            const time = document.getElementById('rsv-time');
+            const guests = document.getElementById('rsv-guests');
+            const table = document.getElementById('rsv-table');
 
-            // Save booking to localStorage
-            let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            bookings.push({
-                ...formData,
-                id: Date.now(),
-                createdAt: new Date().toISOString()
+            if (!name.value || !phone.value || !date.value || !time.value || !guests.value || !table.value) {
+                // Trigger browser validation
+                const form = document.getElementById('booking-form');
+                if (!form.reportValidity()) return;
+            }
+
+            document.getElementById('booking-step-1').classList.add('hidden');
+            document.getElementById('booking-step-2').classList.remove('hidden');
+            document.getElementById('booking-title').textContent = 'Pre-Order Menu';
+            document.getElementById('booking-subtitle').textContent = 'Step 2 of 2 — Pilih menu untuk dipesan';
+            document.getElementById('step-bar-1').classList.add('bg-orange-500');
+            document.getElementById('step-bar-2').classList.remove('bg-gray-200', 'dark:bg-gray-700');
+            document.getElementById('step-bar-2').classList.add('bg-orange-500');
+        }
+
+        function goToStep1() {
+            document.getElementById('booking-step-2').classList.add('hidden');
+            document.getElementById('booking-step-1').classList.remove('hidden');
+            document.getElementById('booking-title').textContent = 'Book a Table';
+            document.getElementById('booking-subtitle').textContent = 'Step 1 of 2 — Reservation Details';
+            document.getElementById('step-bar-2').classList.remove('bg-orange-500');
+            document.getElementById('step-bar-2').classList.add('bg-gray-200', 'dark:bg-gray-700');
+        }
+
+        function addBookingItem(id, name, price) {
+            const existing = bookingCart.find(i => i.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                bookingCart.push({ id, name, price, quantity: 1 });
+            }
+            renderBookingCart();
+        }
+
+        function removeBookingItem(id) {
+            bookingCart = bookingCart.filter(i => i.id !== id);
+            renderBookingCart();
+        }
+
+        function updateBookingQty(id, delta) {
+            const item = bookingCart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    removeBookingItem(id);
+                    return;
+                }
+            }
+            renderBookingCart();
+        }
+
+        function renderBookingCart() {
+            const container = document.getElementById('booking-order-items');
+            const totalEl = document.getElementById('booking-order-total');
+            const totalVal = document.getElementById('booking-total-value');
+            const emptyMsg = document.getElementById('booking-empty-msg');
+            const inputsContainer = document.getElementById('booking-items-inputs');
+
+            if (bookingCart.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-2" id="booking-empty-msg">Belum ada item — klik menu di atas untuk menambahkan</p>';
+                totalEl.classList.add('hidden');
+                inputsContainer.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+            let hiddenInputs = '';
+
+            bookingCart.forEach((item, idx) => {
+                const sub = item.price * item.quantity;
+                total += sub;
+
+                html += `
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1">
+                            <span class="font-medium">${item.name}</span>
+                            <span class="text-gray-400 ml-1">× ${item.quantity}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">Rp ${sub.toLocaleString('id-ID')}</span>
+                            <button type="button" onclick="updateBookingQty(${item.id}, -1)"
+                                class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs hover:bg-red-200">−</button>
+                            <button type="button" onclick="updateBookingQty(${item.id}, 1)"
+                                class="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs hover:bg-green-200">+</button>
+                            <button type="button" onclick="removeBookingItem(${item.id})"
+                                class="text-red-400 hover:text-red-600 text-xs">✕</button>
+                        </div>
+                    </div>`;
+
+                hiddenInputs += `
+                    <input type="hidden" name="items[${idx}][menu_id]" value="${item.id}">
+                    <input type="hidden" name="items[${idx}][quantity]" value="${item.quantity}">`;
             });
-            localStorage.setItem('bookings', JSON.stringify(bookings));
 
-            closeBookingModal();
-            showNotification(`Booking confirmed for ${formData.name} on ${formData.date}!`);
+            container.innerHTML = html;
+            totalEl.classList.remove('hidden');
+            totalVal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            inputsContainer.innerHTML = hiddenInputs;
+        }
 
-            // Reset form
-            this.reset();
-        });
+        // Category filter for booking menu
+        function filterBookingMenu(cat) {
+            document.querySelectorAll('.booking-cat-btn').forEach(btn => {
+                btn.classList.remove('active-cat', 'bg-orange-500', 'text-white', 'border-orange-500');
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('active-cat', 'bg-orange-500', 'text-white', 'border-orange-500');
+                }
+            });
+
+            document.querySelectorAll('.booking-menu-item').forEach(item => {
+                if (cat === 'all' || item.dataset.category === cat) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        // Auto-open modal on validation error or show success
+        @if (session('booking_error') || $errors->any())
+            document.addEventListener('DOMContentLoaded', function() {
+                openBookingModal();
+            });
+        @endif
+
+        @if (session('booking_success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                showNotification('{{ session('booking_success') }}');
+            });
+        @endif
 
         // Newsletter Form
         document.getElementById('newsletter-form').addEventListener('submit', function(e) {

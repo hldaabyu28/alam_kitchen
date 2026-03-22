@@ -15,7 +15,18 @@ class Table extends Model
     protected $fillable = [
         'table_number',
         'capacity',
+        'location',
+        'is_active',
         'status',
         'description',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

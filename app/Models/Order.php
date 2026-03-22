@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Discount;
 use App\Models\User;
 use App\Models\OrderItem;
+use App\Models\Payment;
+use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,6 +20,7 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'user_id',
+        'reservation_id',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -57,6 +60,16 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
     }
 
     /**

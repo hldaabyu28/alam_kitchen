@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_number')->unique();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('reservation_id')->nullable()->constrained()->nullOnDelete();
 
             // Guest checkout info
             $table->string('customer_name');

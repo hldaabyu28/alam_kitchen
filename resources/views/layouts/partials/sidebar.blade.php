@@ -54,6 +54,8 @@
                             ['url' => $prefix . '/menu', 'label' => 'Menu', 'route' => 'super_admin.menu*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
                             ['url' => $prefix . '/discount', 'label' => 'Diskon', 'route' => 'super_admin.discount*', 'icon' => 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'],
                             ['url' => $prefix . '/orders', 'label' => 'Pesanan', 'route' => 'super_admin.orders*', 'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'],
+                            ['url' => $prefix . '/reservasi', 'label' => 'Reservasi', 'route' => 'super_admin.reservasi*', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                            ['url' => $prefix . '/table', 'label' => 'Kelola Meja', 'route' => 'super_admin.table*', 'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'],
                             ['url' => $prefix . '/analytics', 'label' => 'Analisis', 'route' => 'super_admin.analytics*', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
                         ]);
                     } elseif ($role === 'admin') {
@@ -62,6 +64,8 @@
                             ['url' => $prefix . '/menu', 'label' => 'Menu', 'route' => 'admin.menu*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
                             ['url' => $prefix . '/discount', 'label' => 'Diskon', 'route' => 'admin.discount*', 'icon' => 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'],
                             ['url' => $prefix . '/orders', 'label' => 'Pesanan', 'route' => 'admin.orders*', 'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'],
+                            ['url' => $prefix . '/reservasi', 'label' => 'Reservasi', 'route' => 'admin.reservasi*', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                            ['url' => $prefix . '/table', 'label' => 'Kelola Meja', 'route' => 'admin.table*', 'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'],
                             ['url' => $prefix . '/analytics', 'label' => 'Analisis', 'route' => 'admin.analytics*', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
                         ]);
                     } elseif ($role === 'kasir') {
@@ -69,6 +73,7 @@
                             ['url' => $prefix . '/transaksi', 'label' => 'Transaksi', 'route' => 'kasir.transaksi*', 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'],
                             ['url' => $prefix . '/orders', 'label' => 'Pesanan', 'route' => 'kasir.orders*', 'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'],
                             ['url' => $prefix . '/menu', 'label' => 'Lihat Menu', 'route' => 'kasir.menu*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+                            ['url' => $prefix . '/reservasi', 'label' => 'Reservasi', 'route' => 'kasir.reservasi*', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                         ]);
                     }
                 @endphp
