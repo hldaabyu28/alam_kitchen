@@ -25,7 +25,9 @@ class TransactionController extends Controller
             ->orderBy('order')
             ->get();
 
-        return view('transaksi.index', compact('menus', 'categories'));
+        $activeTax = \App\Models\Tax::where('is_active', true)->first();
+
+        return view('transaksi.index', compact('menus', 'categories', 'activeTax'));
     }
 
     /**
@@ -78,7 +80,12 @@ class TransactionController extends Controller
                 }
 
                 $discountAmount = min($validated['discount_amount'] ?? 0, $subtotal);
-                $totalAmount = $subtotal - $discountAmount;
+                
+                $activeTax = \App\Models\Tax::where('is_active', true)->first();
+                $taxRate = $activeTax ? $activeTax->rate : 0;
+                $taxAmount = round(($subtotal - $discountAmount) * ($taxRate / 100));
+
+                $totalAmount = $subtotal - $discountAmount + $taxAmount;
 
                 $discountId = null;
                 if (!empty($validated['discount_code'])) {
@@ -102,7 +109,7 @@ class TransactionController extends Controller
                     'subtotal'        => $subtotal,
                     'discount_amount' => $discountAmount,
                     'discount_id'     => $discountId,
-                    'tax_amount'      => 0,
+                    'tax_amount'      => $taxAmount,
                     'total_amount'    => $totalAmount,
                     'status'          => $validated['status'],
                     'payment_status'  => $validated['payment_status'],
@@ -124,5 +131,14 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Print the order receipt.
+     */
+    public function print(Order $order)
+    {
+        $order->load(['items', 'user']);
+        return view('transaksi.print', compact('order'));
     }
 }

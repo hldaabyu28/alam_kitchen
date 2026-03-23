@@ -11,6 +11,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentCallbackController;
+use App\Http\Controllers\TaxController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -62,6 +63,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
     Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
+    Route::resource('tax', TaxController::class)->except(['show', 'create', 'edit']);
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
@@ -82,6 +84,7 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
     Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
+    Route::resource('tax', TaxController::class)->except(['show', 'create', 'edit']);
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
@@ -102,6 +105,7 @@ Route::middleware(['auth', 'role:kasir,admin,super_admin'])->prefix('kasir')->na
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
     Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi/{order}/print', [TransactionController::class, 'print'])->name('transaksi.print');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');

@@ -174,6 +174,10 @@
                             <span class="text-red-500">Diskon</span>
                             <span id="cart-discount" class="font-medium text-red-500">- Rp 0</span>
                         </div>
+                        <div id="tax-row" class="flex justify-between items-center text-sm hidden">
+                            <span class="text-gray-500">Pajak ({{ $activeTax ? $activeTax->rate + 0 : 0 }}%)</span>
+                            <span id="cart-tax" class="font-medium text-gray-500">+ Rp 0</span>
+                        </div>
                         <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-2">
                             <span class="text-lg font-bold">Total</span>
                             <span id="cart-total" class="text-2xl font-bold text-emerald-600">Rp 0</span>
@@ -217,6 +221,10 @@
                 <div id="payment-discount-row" class="flex justify-between items-center text-sm hidden">
                     <span class="text-red-500">Diskon</span>
                     <span id="payment-discount" class="font-medium text-red-500">- Rp 0</span>
+                </div>
+                <div id="payment-tax-row" class="flex justify-between items-center text-sm hidden">
+                    <span class="text-gray-500">Pajak ({{ $activeTax ? $activeTax->rate + 0 : 0 }}%)</span>
+                    <span id="payment-tax" class="font-medium text-gray-500">+ Rp 0</span>
                 </div>
                 <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-2">
                     <span class="text-gray-500 font-semibold">Total Pembayaran</span>
@@ -348,16 +356,31 @@
                             <span>- Rp {{ number_format($receipt['discount_amount'], 0, ',', '.') }}</span>
                         </div>
                     @endif
+                    @if (isset($receipt['tax_amount']) && $receipt['tax_amount'] > 0)
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>Pajak</span>
+                            <span>+ Rp {{ number_format($receipt['tax_amount'], 0, ',', '.') }}</span>
+                        </div>
+                    @endif
                     <div class="flex justify-between font-bold text-sm {{ $receipt['discount_amount'] <= 0 ? 'border-t border-gray-200 dark:border-gray-700 pt-2 mt-2' : '' }}">
                         <span>Total</span>
                         <span>Rp {{ number_format($receipt['total_amount'], 0, ',', '.') }}</span>
                     </div>
                 </div>
 
-                <button onclick="document.getElementById('receipt-modal').classList.add('hidden')"
-                    class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-semibold transition">
-                    Transaksi Baru
-                </button>
+                <div class="flex gap-3">
+                    <a href="{{ route('kasir.transaksi.print', $receipt['id']) }}" target="_blank"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        Cetak Struk
+                    </a>
+                    <button onclick="document.getElementById('receipt-modal').classList.add('hidden')"
+                        class="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-semibold transition">
+                        Transaksi Baru
+                    </button>
+                </div>
             </div>
         </div>
     @endif
@@ -375,6 +398,7 @@
             // Menu data from server
             // ============================================
             const allMenus = @json($menus);
+            const activeTaxRate = {{ $activeTax ? $activeTax->rate : 0 }};
 
             // ============================================
             // Add to cart
@@ -432,6 +456,8 @@
                 const totalEl = document.getElementById('cart-total');
                 const discountRow = document.getElementById('discount-row');
                 const discountEl = document.getElementById('cart-discount');
+                const taxRow = document.getElementById('tax-row');
+                const taxEl = document.getElementById('cart-tax');
                 const hiddenContainer = document.getElementById('hidden-items-container');
                 const submitBtn = document.getElementById('btn-submit');
 
@@ -443,6 +469,7 @@
                     subtotalEl.textContent = 'Rp 0';
                     totalEl.textContent = 'Rp 0';
                     discountRow.classList.add('hidden');
+                    taxRow.classList.add('hidden');
                     document.getElementById('input-discount-amount').value = 0;
                     submitBtn.disabled = true;
                     return;
@@ -504,7 +531,16 @@
                     discountRow.classList.add('hidden');
                 }
 
-                const total = subtotal - discountAmount;
+                const taxAmount = Math.round((subtotal - discountAmount) * (activeTaxRate / 100));
+                
+                if (taxAmount > 0) {
+                    taxRow.classList.remove('hidden');
+                    taxEl.textContent = `+ Rp ${taxAmount.toLocaleString('id-ID')}`;
+                } else {
+                    taxRow.classList.add('hidden');
+                }
+
+                const total = subtotal - discountAmount + taxAmount;
                 totalEl.textContent = `Rp ${total.toLocaleString('id-ID')}`;
                 document.getElementById('input-discount-amount').value = discountAmount;
             }
@@ -603,6 +639,14 @@
                     document.getElementById('payment-discount').textContent = document.getElementById('cart-discount').textContent;
                 } else {
                     document.getElementById('payment-discount-row').classList.add('hidden');
+                }
+                
+                const taxRow = document.getElementById('tax-row');
+                if (!taxRow.classList.contains('hidden')) {
+                    document.getElementById('payment-tax-row').classList.remove('hidden');
+                    document.getElementById('payment-tax').textContent = document.getElementById('cart-tax').textContent;
+                } else {
+                    document.getElementById('payment-tax-row').classList.add('hidden');
                 }
 
                 // Reset selections
