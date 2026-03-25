@@ -41,7 +41,7 @@ class TransactionController extends Controller
             'pickup_time'      => 'nullable|date',
             'notes'            => 'nullable|string|max:1000',
             'discount_amount'  => 'nullable|numeric|min:0',
-            'payment_method'   => 'required|in:cash,transfer,qris,e-wallet',
+            'payment_method'   => 'required|in:cash,transfer,qris,e-wallet,midtrans',
             'payment_status'   => 'required|in:paid,unpaid',
             'status'           => 'required|in:confirmed,processing,ready,completed',
             'items'            => 'required|array|min:1',
@@ -112,9 +112,9 @@ class TransactionController extends Controller
                     'tax_amount'      => $taxAmount,
                     'total_amount'    => $totalAmount,
                     'status'          => $validated['status'],
-                    'payment_status'  => $validated['payment_status'],
+                    'payment_status'  => $validated['payment_method'] === 'midtrans' ? 'unpaid' : $validated['payment_status'],
                     'payment_method'  => $validated['payment_method'],
-                    'completed_at'    => $validated['status'] === 'completed' ? now() : null,
+                    'completed_at'    => ($validated['status'] === 'completed' && $validated['payment_method'] !== 'midtrans') ? now() : null,
                 ]);
 
                 foreach ($itemsData as $itemData) {
@@ -124,6 +124,19 @@ class TransactionController extends Controller
                 return $order;
             });
 
+            if ($validated['payment_method'] === 'midtrans') {
+                $midtrans = new \App\Services\MidtransService();
+                $payment = $midtrans->createSnapTransaction($order);
+                
+                if ($payment && $payment->snap_token) {
+                    return redirect()->back()->with([
+                        'success' => "Transaksi #{$order->order_number} dibuat. Menunggu pembayaran...",
+                        'snap_token' => $payment->snap_token,
+                        'receipt' => $order->load('items')->toArray(),
+                    ]);
+                }
+            }
+
             return redirect()->back()->with([
                 'success' => "Transaksi #{$order->order_number} berhasil! Total: Rp " . number_format($order->total_amount, 0, ',', '.'),
                 'receipt' => $order->load('items')->toArray(),
@@ -131,6 +144,31 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Mark midtrans payment as success from local kasir.
+     */
+    public function markMidtransSuccess(Order $order)
+    {
+        DB::transaction(function () use ($order) {
+            $order->payment_status = 'paid';
+            if ($order->status === 'completed') {
+                $order->completed_at = now();
+            }
+            $order->save();
+
+            $payment = \App\Models\Payment::where('order_id', $order->id)->first();
+            if ($payment) {
+                $payment->status = 'settlement';
+                $payment->save();
+            }
+        });
+
+        session()->flash('success', "Pembayaran Midtrans berhasil untuk Pesanan #{$order->order_number}");
+        session()->flash('receipt', $order->load('items')->toArray());
+
+        return response()->json(['success' => true]);
     }
 
     /**

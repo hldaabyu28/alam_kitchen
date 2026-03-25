@@ -110,6 +110,7 @@ Route::middleware(['auth', 'role:kasir,admin,super_admin'])->prefix('kasir')->na
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
     Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store');
     Route::get('/transaksi/{order}/print', [TransactionController::class, 'print'])->name('transaksi.print');
+    Route::post('/transaksi/{order}/midtrans-success', [TransactionController::class, 'markMidtransSuccess'])->name('transaksi.midtrans-success');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');

@@ -36,7 +36,6 @@ class MidtransService
             ];
         }
 
-        // Add discount as a negative item if processing amount
         if ($order->discount_amount > 0) {
             $itemDetails[] = [
                 'id'       => 'DISCOUNT',
@@ -46,16 +45,31 @@ class MidtransService
             ];
         }
 
+        // Add tax as a positive item if processing amount
+        if ($order->tax_amount > 0) {
+            $itemDetails[] = [
+                'id'       => 'TAX',
+                'price'    => (int) $order->tax_amount,
+                'quantity' => 1,
+                'name'     => 'Pajak / Tax'
+            ];
+        }
+
+        $customerDetails = [
+            'first_name' => $order->customer_name,
+            'phone'      => $order->customer_phone,
+        ];
+        
+        if (!empty($order->customer_email) && filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)) {
+            $customerDetails['email'] = $order->customer_email;
+        }
+
         $params = [
             'transaction_details' => [
                 'order_id'     => $order->order_number . '-' . time(), // Unique constraint workaround if same order retries
                 'gross_amount' => (int) $order->total_amount,
             ],
-            'customer_details'    => [
-                'first_name' => $order->customer_name,
-                'email'      => $order->customer_email,
-                'phone'      => $order->customer_phone,
-            ],
+            'customer_details'    => $customerDetails,
             'item_details'        => $itemDetails,
         ];
 

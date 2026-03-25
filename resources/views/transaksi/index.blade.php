@@ -252,6 +252,10 @@
                         class="pay-method-btn px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-sm font-medium flex items-center gap-2 hover:border-emerald-500 transition">
                         <span class="text-lg">💳</span> E-Wallet
                     </button>
+                    <button type="button" onclick="selectPaymentMethod('midtrans')" data-method="midtrans"
+                        class="pay-method-btn px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-sm font-medium flex items-center gap-2 hover:border-emerald-500 transition col-span-2">
+                        <span class="text-lg">🌐</span> Midtrans (Online/QRIS)
+                    </button>
                 </div>
             </div>
 
@@ -386,6 +390,29 @@
     @endif
 
     @push('scripts')
+        @if(session('snap_token'))
+            <script src="{{ config('midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    window.snap.pay("{{ session('snap_token') }}", {
+                        onSuccess: function(result) {
+                            console.log('Payment success', result);
+                        },
+                        onPending: function(result) {
+                            console.log('Payment pending', result);
+                        },
+                        onError: function(result) {
+                            console.log('Payment error', result);
+                            alert("Pembayaran gagal!");
+                        },
+                        onClose: function() {
+                            console.log('Payment popup closed');
+                        }
+                    });
+                });
+            </script>
+        @endif
+
         <script>
             // ============================================
             // Cart state
