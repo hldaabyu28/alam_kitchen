@@ -12,6 +12,7 @@ use App\Http\Controllers\TableController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\TaxController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -60,6 +61,7 @@ Route::post('/logout', [LoginController::class, 'logout'])
 // Super Admin
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super_admin.')->group(function () {
     Route::get('/dashboard', fn() => view('super_admin.dashboard'))->name('dashboard');
+    Route::resource('users', UserController::class)->except(['show', 'create', 'edit']);
     Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
     Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
@@ -67,6 +69,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::patch('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->name('orders.updatePayment');
     Route::resource('table', TableController::class)->except(['show', 'create', 'edit']);
 
     // Reservasi
@@ -88,6 +91,7 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::patch('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->name('orders.updatePayment');
     Route::resource('table', TableController::class)->except(['show', 'create', 'edit']);
 
     // Reservasi
@@ -109,6 +113,7 @@ Route::middleware(['auth', 'role:kasir,admin,super_admin'])->prefix('kasir')->na
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::patch('/orders/{order}/payment', [OrderController::class, 'updatePayment'])->name('orders.updatePayment');
 
     // Reservasi
     Route::get('/reservasi/available-tables', [ReservationController::class, 'availableTables'])->name('reservasi.availableTables');

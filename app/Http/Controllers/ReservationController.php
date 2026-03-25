@@ -7,8 +7,11 @@ use App\Models\MenuCategory;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Table;
+use App\Mail\ReservationStatusUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 
 class ReservationController extends Controller
 {
@@ -307,6 +310,15 @@ class ReservationController extends Controller
 
             $reservation->save();
         });
+
+        // Send Email Notification
+        if (!empty($reservation->customer_email) && filter_var($reservation->customer_email, FILTER_VALIDATE_EMAIL) && $reservation->customer_email !== '-') {
+            try {
+                Mail::to($reservation->customer_email)->send(new ReservationStatusUpdated($reservation));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal mengirim email update reservasi: ' . $e->getMessage());
+            }
+        }
 
         $statusLabels = [
             'confirmed' => 'dikonfirmasi',

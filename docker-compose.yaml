@@ -15,9 +15,19 @@ services:
       DB_DATABASE: laravel_db
       DB_USERNAME: laravel
       DB_PASSWORD: secret
+
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_USERNAME: null
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null
+
+      QUEUE_CONNECTION: redis
     depends_on:
       - mysql
-      - phpmyadmin
+      - redis
+      - mailhog
     networks:
       - laravel
 
@@ -35,6 +45,7 @@ services:
       - ./mysql_data:/var/lib/mysql
     networks:
       - laravel
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: laravel_phpmyadmin
@@ -49,8 +60,37 @@ services:
       - mysql
     networks:
       - laravel
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: laravel_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - laravel
+
+  redis:
+    image: redis:alpine
+    container_name: laravel_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: laravel_queue
+    command: php artisan queue:work
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - app
+      - redis
+    networks:
+      - laravel
+
 networks:
   laravel:
-
-volumes:
-  mysql-data:
