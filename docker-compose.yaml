@@ -17,17 +17,18 @@ services:
       DB_PASSWORD: secret
 
       MAIL_MAILER: smtp
-      MAIL_HOST: mailhog
-      MAIL_PORT: 1025
-      MAIL_USERNAME: null
-      MAIL_PASSWORD: null
-      MAIL_ENCRYPTION: null
+      MAIL_HOST: sandbox.smtp.mailtrap.io
+      MAIL_PORT: 2525
+      MAIL_USERNAME: 6b6176d3b1a68e
+      MAIL_PASSWORD: b992dc05ce1991
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: noreplay@gmail.com
+      MAIL_FROM_NAME: "Alam Kitchen"
 
       QUEUE_CONNECTION: redis
     depends_on:
       - mysql
       - redis
-      - mailhog
     networks:
       - laravel
 
@@ -58,15 +59,6 @@ services:
       MYSQL_ROOT_PASSWORD: root
     depends_on:
       - mysql
-    networks:
-      - laravel
-
-  mailhog:
-    image: mailhog/mailhog
-    container_name: laravel_mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"
     networks:
       - laravel
 

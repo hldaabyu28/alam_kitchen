@@ -13,6 +13,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -36,9 +37,12 @@ Route::middleware('guest')->group(function () {
 // Public API: validate discount code
 Route::post('/api/discount/validate', [DiscountController::class, 'validatePromo'])->name('api.discount.validate');
 
+// Public contact form submission
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
 // Payment Callbacks & Webhooks
 Route::post('/payment/midtrans-callback', [PaymentCallbackController::class, 'handleNotification'])->name('payment.callback');
-Route::get('/payment/finish', function() {
+Route::get('/payment/finish', function () {
     return view('landing.payment-finish');
 })->name('payment.finish');
 
@@ -79,6 +83,13 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::get('/reservasi/{reservation}', [ReservationController::class, 'show'])->name('reservasi.show');
     Route::patch('/reservasi/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservasi.updateStatus');
     Route::post('/reservasi/{reservation}/order', [ReservationController::class, 'addOrder'])->name('reservasi.addOrder');
+
+    // Pesan Masuk (Contact CMS)
+    Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+    Route::get('/contact/{contact}', [ContactController::class, 'show'])->name('contact.show');
+    Route::post('/contact/{contact}/read', [ContactController::class, 'markRead'])->name('contact.read');
+    Route::post('/contact/{contact}/unread', [ContactController::class, 'markUnread'])->name('contact.unread');
+    Route::delete('/contact/{contact}', [ContactController::class, 'destroy'])->name('contact.destroy');
 });
 
 // Admin
@@ -101,6 +112,13 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('/reservasi/{reservation}', [ReservationController::class, 'show'])->name('reservasi.show');
     Route::patch('/reservasi/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservasi.updateStatus');
     Route::post('/reservasi/{reservation}/order', [ReservationController::class, 'addOrder'])->name('reservasi.addOrder');
+
+    // Pesan Masuk (Contact CMS)
+    Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+    Route::get('/contact/{contact}', [ContactController::class, 'show'])->name('contact.show');
+    Route::post('/contact/{contact}/read', [ContactController::class, 'markRead'])->name('contact.read');
+    Route::post('/contact/{contact}/unread', [ContactController::class, 'markUnread'])->name('contact.unread');
+    Route::delete('/contact/{contact}', [ContactController::class, 'destroy'])->name('contact.destroy');
 });
 
 // Kasir

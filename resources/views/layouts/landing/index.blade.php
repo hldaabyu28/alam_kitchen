@@ -581,21 +581,136 @@
 
     <!-- NEWSLETTER -->
     <section id="contact" class="pb-16 sm:pb-24">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center" data-aos="fade-up">
-            <h2 class="text-2xl sm:text-3xl md:text-4xl mb-4 font-semibold">Subscribe to Our Newsletter</h2>
-            <p class="opacity-70 mb-6 sm:mb-8 text-sm sm:text-base">
-                Find the tastiest dishes and get exclusive offers delivered to your inbox.
-            </p>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6" data-aos="fade-up">
+            <div class="text-center mb-10 sm:mb-14">
+                <p class="tracking-widest text-xs sm:text-sm mb-3 text-orange-500">HUBUNGI KAMI</p>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold">Kirim Pesan Kepada Kami</h2>
+                <p class="opacity-70 mt-3 text-sm sm:text-base max-w-xl mx-auto">
+                    Ada pertanyaan, saran, atau ingin bekerja sama? Isi formulir di bawah dan tim kami akan segera merespons.
+                </p>
+            </div>
 
-            <form id="newsletter-form" class="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto">
-                <input type="email" id="newsletter-email" required
-                    class="bg-white dark:bg-gray-800 px-5 py-3 rounded-full w-full sm:flex-1 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-300 dark:border-gray-700"
-                    placeholder="Your email address" />
-                <button type="submit"
-                    class="bg-orange-500 text-white px-6 sm:px-8 py-3 rounded-full hover:bg-orange-600 transition font-semibold whitespace-nowrap">
-                    Subscribe
-                </button>
-            </form>
+            @if(session('contact_success'))
+            <div class="mb-8 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-5 py-4 rounded-2xl flex items-center gap-3 max-w-2xl mx-auto">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <p class="text-sm font-medium">{{ session('contact_success') }}</p>
+            </div>
+            @endif
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
+
+                {{-- Contact Info --}}
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-0.5">Telepon</p>
+                                <p class="font-semibold text-sm">+62 812-3456-7890</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-0.5">Email</p>
+                                <p class="font-semibold text-sm">hello@alamkitchen.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-0.5">Jam Operasional</p>
+                                <p class="font-semibold text-sm">Senin – Minggu: 10.00 – 23.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-top gap-4">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-0.5">Alamat</p>
+                                <p class="font-semibold text-sm leading-relaxed">Jl. Kuliner Nusantara No. 12<br>Kota Harmoni, Indonesia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Contact Form --}}
+                <div class="lg:col-span-3 bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-lg border border-gray-100 dark:border-gray-800">
+                    <form id="contact-form" method="POST" action="{{ route('contact.store') }}" class="space-y-4">
+                        @csrf
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Nama Lengkap <span class="text-orange-500">*</span></label>
+                                <input type="text" name="name" required value="{{ old('name') }}"
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                    placeholder="Nama Anda">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">No. Telepon</label>
+                                <input type="tel" name="phone" value="{{ old('phone') }}"
+                                    class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                    placeholder="08xxxxxxxxxx">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Alamat Email <span class="text-orange-500">*</span></label>
+                            <input type="email" name="email" required value="{{ old('email') }}"
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                placeholder="email@contoh.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Subjek <span class="text-orange-500">*</span></label>
+                            <input type="text" name="subject" required value="{{ old('subject') }}"
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                                placeholder="Pertanyaan / Saran / Keluhan...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Pesan <span class="text-orange-500">*</span></label>
+                            <textarea name="message" rows="5" required
+                                class="w-full px-4 py-3 rounded-2xl border border-gray-300 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm resize-none"
+                                placeholder="Tulis pesan Anda di sini...">{{ old('message') }}</textarea>
+                        </div>
+                        @if($errors->any())
+                        <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-4 py-3 rounded-2xl text-sm">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        <button type="submit" id="contact-submit-btn"
+                            class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3.5 rounded-full font-semibold transition text-sm flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 

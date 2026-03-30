@@ -58,6 +58,7 @@
                             ['url' => $prefix . '/reservasi', 'label' => 'Reservasi', 'route' => 'super_admin.reservasi*', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                             ['url' => $prefix . '/table', 'label' => 'Kelola Meja', 'route' => 'super_admin.table*', 'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'],
                             ['url' => $prefix . '/analytics', 'label' => 'Analisis', 'route' => 'super_admin.analytics*', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+                            ['url' => $prefix . '/contact', 'label' => 'Pesan Masuk', 'route' => 'super_admin.contact*', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                         ]);
                     } elseif ($role === 'admin') {
                         $navItems = array_merge($navItems, [
@@ -69,6 +70,7 @@
                             ['url' => $prefix . '/reservasi', 'label' => 'Reservasi', 'route' => 'admin.reservasi*', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                             ['url' => $prefix . '/table', 'label' => 'Kelola Meja', 'route' => 'admin.table*', 'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'],
                             ['url' => $prefix . '/analytics', 'label' => 'Analisis', 'route' => 'admin.analytics*', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+                            ['url' => $prefix . '/contact', 'label' => 'Pesan Masuk', 'route' => 'admin.contact*', 'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                         ]);
                     } elseif ($role === 'kasir') {
                         $navItems = array_merge($navItems, [
