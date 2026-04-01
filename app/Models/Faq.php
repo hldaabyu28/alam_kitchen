@@ -16,10 +16,11 @@ class Faq extends Model
         'question',
         'answer',
         'is_active',
+        'order',
+        'category',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
-
 }

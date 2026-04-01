@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -90,6 +91,13 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::post('/contact/{contact}/read', [ContactController::class, 'markRead'])->name('contact.read');
     Route::post('/contact/{contact}/unread', [ContactController::class, 'markUnread'])->name('contact.unread');
     Route::delete('/contact/{contact}', [ContactController::class, 'destroy'])->name('contact.destroy');
+
+    // Store Settings
+    Route::get('/settings', [StoreController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [StoreController::class, 'update'])->name('settings.update');
+    Route::post('/settings/faq', [StoreController::class, 'storeFaq'])->name('settings.faq.store');
+    Route::put('/settings/faq/{faq}', [StoreController::class, 'updateFaq'])->name('settings.faq.update');
+    Route::delete('/settings/faq/{faq}', [StoreController::class, 'destroyFaq'])->name('settings.faq.destroy');
 });
 
 // Admin
@@ -119,6 +127,13 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::post('/contact/{contact}/read', [ContactController::class, 'markRead'])->name('contact.read');
     Route::post('/contact/{contact}/unread', [ContactController::class, 'markUnread'])->name('contact.unread');
     Route::delete('/contact/{contact}', [ContactController::class, 'destroy'])->name('contact.destroy');
+
+    // Store Settings
+    Route::get('/settings', [StoreController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [StoreController::class, 'update'])->name('settings.update');
+    Route::post('/settings/faq', [StoreController::class, 'storeFaq'])->name('settings.faq.store');
+    Route::put('/settings/faq/{faq}', [StoreController::class, 'updateFaq'])->name('settings.faq.update');
+    Route::delete('/settings/faq/{faq}', [StoreController::class, 'destroyFaq'])->name('settings.faq.destroy');
 });
 
 // Kasir

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Faq;
 use App\Models\Menu;
 use App\Models\MenuCategory;
+use App\Models\Store;
 use App\Models\Table;
 use Illuminate\Http\Request;
 
@@ -26,6 +28,13 @@ class LandingController extends Controller
             ->orderBy('table_number')
             ->get();
 
-        return view('layouts.landing.index', compact('menus', 'categories', 'tables'));
+        $store = Store::first();
+
+        $faqs = Faq::where('is_active', true)
+            ->orderBy('order')
+            ->orderBy('id')
+            ->get();
+
+        return view('layouts.landing.index', compact('menus', 'categories', 'tables', 'store', 'faqs'));
     }
 }
