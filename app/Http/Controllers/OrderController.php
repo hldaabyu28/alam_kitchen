@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use App\Models\Order;
+use App\Models\Discount;
 use App\Models\OrderItem;
 use App\Mail\OrderStatusUpdated;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class OrderController extends Controller
                 $discountId = null;
 
                 if (!empty($validated['discount_code'])) {
-                    $discount = \App\Models\Discount::where('code', $validated['discount_code'])->first();
+                    $discount = Discount::where('code', $validated['discount_code'])->first();
                     if ($discount && $discount->is_active && $subtotal >= ($discount->min_order_amount ?? 0)) {
                         if (now()->gte($discount->valid_from) && now()->lte($discount->valid_until)) {
                             if ($discount->usage_limit === null || $discount->used_count < $discount->usage_limit) {
