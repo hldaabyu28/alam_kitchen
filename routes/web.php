@@ -15,6 +15,8 @@ use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -65,7 +67,8 @@ Route::post('/logout', [LoginController::class, 'logout'])
 
 // Super Admin
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super_admin.')->group(function () {
-    Route::get('/dashboard', fn() => view('super_admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::resource('users', UserController::class)->except(['show', 'create', 'edit']);
     Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
     Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
@@ -102,7 +105,8 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
 
 // Admin
 Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::resource('menu', MenuController::class)->except(['show', 'create', 'edit']);
     Route::resource('category', MenuCategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('discount', DiscountController::class)->except(['show', 'create', 'edit']);
@@ -138,7 +142,7 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
 // Kasir
 Route::middleware(['auth', 'role:kasir,admin,super_admin'])->prefix('kasir')->name('kasir.')->group(function () {
-    Route::get('/dashboard', fn() => view('kasir.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/transaksi', [TransactionController::class, 'index'])->name('transaksi.index');
     Route::post('/transaksi', [TransactionController::class, 'store'])->name('transaksi.store');

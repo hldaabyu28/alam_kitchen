@@ -130,9 +130,10 @@ class TransactionController extends Controller
                 
                 if ($payment && $payment->snap_token) {
                     return redirect()->back()->with([
-                        'success' => "Transaksi #{$order->order_number} dibuat. Menunggu pembayaran...",
-                        'snap_token' => $payment->snap_token,
-                        'receipt' => $order->load('items')->toArray(),
+                        'success'          => "Transaksi #{$order->order_number} dibuat. Menunggu pembayaran...",
+                        'snap_token'       => $payment->snap_token,
+                        'midtrans_order_id' => $order->id,
+                        'receipt'          => $order->load('items')->toArray(),
                     ]);
                 }
             }
@@ -153,9 +154,7 @@ class TransactionController extends Controller
     {
         DB::transaction(function () use ($order) {
             $order->payment_status = 'paid';
-            if ($order->status === 'completed') {
-                $order->completed_at = now();
-            }
+            $order->completed_at   = now();
             $order->save();
 
             $payment = \App\Models\Payment::where('order_id', $order->id)->first();
