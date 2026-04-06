@@ -26,7 +26,7 @@
                         </svg>
                     </div>
                 </div>
-                <h3 class="text-5xl font-bold mb-2">18</h3>
+                <h3 class="text-5xl font-bold mb-2">{{ $ordersTodayCount }}</h3>
                 <div class="flex items-center gap-2 text-sm">
                     <span class="bg-emerald-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@
                     </svg>
                 </div>
             </div>
-            <h3 class="text-5xl font-bold mb-2">12</h3>
+            <h3 class="text-5xl font-bold mb-2">{{ $runningOrders }}</h3>
             <div class="flex items-center gap-2 text-sm text-gray-500">
                 <span class="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-2 py-1 rounded-lg">
                     Sedang Diproses
@@ -72,7 +72,7 @@
                     </svg>
                 </div>
             </div>
-            <h3 class="text-5xl font-bold mb-2">5</h3>
+            <h3 class="text-5xl font-bold mb-2">{{ $pendingOrders }}</h3>
             <div class="flex items-center gap-2 text-sm text-gray-500">
                 <span class="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300 px-2 py-1 rounded-lg">
                     Menunggu
@@ -93,61 +93,29 @@
             </div>
 
             <div class="space-y-4">
-                <div class="flex items-center gap-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
-                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-xl flex items-center justify-center">
+                @forelse($recentOrders as $order)
+                <div class="flex items-center gap-4 p-4 {{ in_array($order->status, ['processing', 'ready']) ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'bg-gray-50 dark:bg-gray-800' }} rounded-xl">
+                    <div class="w-12 h-12 {{ in_array($order->status, ['processing', 'ready']) ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-200 dark:bg-gray-700' }} rounded-xl flex items-center justify-center">
                         <span class="text-2xl">🧾</span>
                     </div>
                     <div class="flex-1">
-                        <h4 class="font-semibold">Meja 2 — 3 Item</h4>
-                        <p class="text-sm text-gray-500">Order #12350 • 5 menit lalu</p>
+                        <h4 class="font-semibold">{{ $order->customer_name ?? 'Pelanggan' }} — {{ $order->items->count() ?? 0 }} Item</h4>
+                        <p class="text-sm text-gray-500">{{ $order->order_number }} • {{ $order->created_at->diffForHumans() }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-bold">Rp 87.000</p>
-                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Menunggu</span>
+                        <p class="font-bold">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
+                        @if($order->status === 'completed')
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Selesai</span>
+                        @elseif(in_array($order->status, ['processing', 'ready']))
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Diproses</span>
+                        @else
+                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Pending</span>
+                        @endif
                     </div>
                 </div>
-
-                <div class="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-                        <span class="text-2xl">🍽️</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold">Meja 5 — 2 Item</h4>
-                        <p class="text-sm text-gray-500">Order #12349 • 12 menit lalu</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold">Rp 62.000</p>
-                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Diproses</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
-                        <span class="text-2xl">✅</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold">Meja 8 — 4 Item</h4>
-                        <p class="text-sm text-gray-500">Order #12348 • 20 menit lalu</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold">Rp 120.000</p>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Siap Bayar</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-xl flex items-center justify-center">
-                        <span class="text-2xl">☕</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold">Meja 3 — 1 Item</h4>
-                        <p class="text-sm text-gray-500">Order #12347 • 25 menit lalu</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold">Rp 32.000</p>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Selesai</span>
-                    </div>
-                </div>
+                @empty
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">Belum ada antrian pesanan</div>
+                @endforelse
             </div>
         </div>
 
