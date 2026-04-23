@@ -1,6 +1,6 @@
 <header
     class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 sm:px-8 py-4 sticky top-0 z-30">
-    <div class="flex items-center justify-between gap-4">
+    <div class="flex items-start justify-between gap-4">
 
         <!-- Mobile Menu Button -->
         <button onclick="toggleSidebar()"
@@ -10,28 +10,10 @@
             </svg>
         </button>
 
-        <!-- Search Bar -->
-        <div class="flex-1 max-w-md">
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input type="text" placeholder="Search task"
-                    class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                <kbd
-                    class="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 text-xs bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded">⌘F</kbd>
-            </div>
-        </div>
-
         <!-- Right Side Icons & Profile -->
-        <div class="flex items-center gap-3">
-        <!-- Right Side Icons & Profile -->
-        <div class="flex items-center gap-3">
-            <!-- Inbox/Email Dropdown -->
+        <div class="flex items-center gap-3 ml-auto"> <!-- Inbox/Email Dropdown -->
             <div class="relative" id="inbox-dropdown-container">
-                <button onclick="toggleDropdown('inbox-dropdown')" 
+                <button onclick="toggleDropdown('inbox-dropdown')"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition relative">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -50,18 +32,18 @@
                     <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                         <h3 class="font-semibold text-sm">Pesan Masuk</h3>
                         @php
-                            $contactRoute = '#';
-                            if (Auth::user()->hasRole('super_admin')) $contactRoute = route('super_admin.contact.index');
-                            elseif (Auth::user()->hasRole('admin')) $contactRoute = route('admin.contact.index');
+                        $contactRoute = '#';
+                        if (Auth::user()->hasRole('super_admin')) $contactRoute = route('super_admin.contact.index');
+                        elseif (Auth::user()->hasRole('admin')) $contactRoute = route('admin.contact.index');
                         @endphp
                         <a href="{{ $contactRoute }}" class="text-xs text-emerald-500 hover:underline">Lihat Semua</a>
                     </div>
                     <div class="max-h-96 overflow-y-auto">
                         @forelse($recentContacts as $contact)
                         @php
-                            $contactShowRoute = '#';
-                            if (Auth::user()->hasRole('super_admin')) $contactShowRoute = route('super_admin.contact.show', $contact);
-                            elseif (Auth::user()->hasRole('admin')) $contactShowRoute = route('admin.contact.show', $contact);
+                        $contactShowRoute = '#';
+                        if (Auth::user()->hasRole('super_admin')) $contactShowRoute = route('super_admin.contact.show', $contact);
+                        elseif (Auth::user()->hasRole('admin')) $contactShowRoute = route('admin.contact.show', $contact);
                         @endphp
                         <a href="{{ $contactShowRoute }}" class="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition border-b border-gray-50 dark:border-gray-700">
                             <div class="flex justify-between items-start mb-1">
@@ -82,7 +64,7 @@
 
             <!-- Notification Dropdown -->
             <div class="relative" id="notification-dropdown-container">
-                <button onclick="toggleDropdown('notification-dropdown')" 
+                <button onclick="toggleDropdown('notification-dropdown')"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition relative">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,16 +87,16 @@
                     <div class="max-h-96 overflow-y-auto">
                         @forelse($recentNotifications as $notification)
                         @php
-                            $notifTargetRoute = '#';
-                            if ($notification->data['type'] === 'order') {
-                                if (Auth::user()->hasRole('super_admin')) $notifTargetRoute = route('super_admin.orders.index');
-                                elseif (Auth::user()->hasRole('admin')) $notifTargetRoute = route('admin.orders.index');
-                                elseif (Auth::user()->hasRole('kasir')) $notifTargetRoute = route('kasir.orders.index');
-                            } else {
-                                if (Auth::user()->hasRole('super_admin')) $notifTargetRoute = route('super_admin.reservasi.index');
-                                elseif (Auth::user()->hasRole('admin')) $notifTargetRoute = route('admin.reservasi.index');
-                                elseif (Auth::user()->hasRole('kasir')) $notifTargetRoute = route('kasir.reservasi.index');
-                            }
+                        $notifTargetRoute = '#';
+                        if ($notification->data['type'] === 'order') {
+                        if (Auth::user()->hasRole('super_admin')) $notifTargetRoute = route('super_admin.orders.index');
+                        elseif (Auth::user()->hasRole('admin')) $notifTargetRoute = route('admin.orders.index');
+                        elseif (Auth::user()->hasRole('kasir')) $notifTargetRoute = route('kasir.orders.index');
+                        } else {
+                        if (Auth::user()->hasRole('super_admin')) $notifTargetRoute = route('super_admin.reservasi.index');
+                        elseif (Auth::user()->hasRole('admin')) $notifTargetRoute = route('admin.reservasi.index');
+                        elseif (Auth::user()->hasRole('kasir')) $notifTargetRoute = route('kasir.reservasi.index');
+                        }
                         @endphp
                         <a href="{{ $notifTargetRoute }}" class="block p-4 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition {{ !$notification->read_at ? 'bg-emerald-50/30 dark:bg-emerald-900/10' : '' }}">
                             <div class="flex gap-3">
@@ -139,10 +121,10 @@
                     </div>
                     <div class="p-3 bg-gray-50 dark:bg-gray-700/50 text-center">
                         @php
-                            $allNotifRoute = '#';
-                            if (Auth::user()->hasRole('super_admin')) $allNotifRoute = route('super_admin.orders.index');
-                            elseif (Auth::user()->hasRole('admin')) $allNotifRoute = route('admin.orders.index');
-                            elseif (Auth::user()->hasRole('kasir')) $allNotifRoute = route('kasir.orders.index');
+                        $allNotifRoute = '#';
+                        if (Auth::user()->hasRole('super_admin')) $allNotifRoute = route('super_admin.orders.index');
+                        elseif (Auth::user()->hasRole('admin')) $allNotifRoute = route('admin.orders.index');
+                        elseif (Auth::user()->hasRole('kasir')) $allNotifRoute = route('kasir.orders.index');
                         @endphp
                         <a href="{{ $allNotifRoute }}" class="text-xs font-medium text-emerald-600 hover:underline">Lihat Semua</a>
                     </div>
@@ -156,7 +138,7 @@
                     <p class="text-xs text-gray-500">{{ Auth::user()->email ?? '' }}</p>
                 </div>
                 @php
-                    $initials = collect(explode(' ', Auth::user()->name ?? 'U'))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('');
+                $initials = collect(explode(' ', Auth::user()->name ?? 'U'))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('');
                 @endphp
                 <div
                     class="w-10 h-10 bg-gradient-to-br from-emerald-600 to-emerald-400 rounded-full flex items-center justify-center text-white font-semibold">
