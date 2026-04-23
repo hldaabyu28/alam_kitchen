@@ -46,14 +46,14 @@
         </div>
 
         <!-- Category Tabs -->
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+        <div class="flex flex-wrap gap-2 mb-4">
             <button onclick="filterByCategory('all')" data-cat="all"
-                class="cat-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-emerald-700 text-white">
+                class="cat-btn px-4 py-2 rounded-full text-sm font-medium bg-emerald-700 text-white">
                 Semua
             </button>
             @foreach ($categories as $category)
             <button onclick="filterByCategory('{{ $category->id }}')" data-cat="{{ $category->id }}"
-                class="cat-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700">
+                class="cat-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700">
                 {{ $category->name }}
             </button>
             @endforeach
@@ -410,8 +410,7 @@
     data-snap-token="{{ session('snap_token') }}"
     data-order-id="{{ session('midtrans_order_id', 0) }}"
     data-callback-url="{{ route('kasir.transaksi.midtrans-success', session('midtrans_order_id', 0)) }}"
-    style="display:none"
-></div>
+    style="display:none"></div>
 <script src="{{ config('midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -423,22 +422,26 @@
             onSuccess: function(result) {
                 console.log('Payment success', result);
                 fetch(callbackUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ result: result })
-                })
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    window.location.reload();
-                })
-                .catch(function() {
-                    alert('Pembayaran berhasil tetapi gagal memperbarui status. Silakan refresh halaman.');
-                    window.location.reload();
-                });
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            result: result
+                        })
+                    })
+                    .then(function(res) {
+                        return res.json();
+                    })
+                    .then(function(data) {
+                        window.location.reload();
+                    })
+                    .catch(function() {
+                        alert('Pembayaran berhasil tetapi gagal memperbarui status. Silakan refresh halaman.');
+                        window.location.reload();
+                    });
             },
             onPending: function(result) {
                 console.log('Payment pending', result);
