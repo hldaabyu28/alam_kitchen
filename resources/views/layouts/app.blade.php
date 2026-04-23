@@ -130,9 +130,57 @@
             overlay.classList.toggle('hidden');
         }
 
+        // Toggle Dropdown
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const allDropdowns = ['inbox-dropdown', 'notification-dropdown'];
+            
+            allDropdowns.forEach(d => {
+                if (d !== id) {
+                    document.getElementById(d).classList.add('hidden');
+                }
+            });
+            
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Mark all notifications as read
+        function markAllNotificationsAsRead() {
+            fetch('{{ route("notifications.markAllRead") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update UI: hide badges and mark items as read
+                    const badges = document.querySelectorAll('#notification-dropdown-container .bg-red-500');
+                    badges.forEach(b => b.classList.add('hidden'));
+                    
+                    const unreadItems = document.querySelectorAll('#notification-dropdown .bg-emerald-50\\/30');
+                    unreadItems.forEach(i => i.classList.remove('bg-emerald-50/30', 'dark:bg-emerald-900/10'));
+                }
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadDarkMode();
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(e) {
+                if (!document.getElementById('inbox-dropdown-container').contains(e.target)) {
+                    document.getElementById('inbox-dropdown').classList.add('hidden');
+                }
+                if (!document.getElementById('notification-dropdown-container').contains(e.target)) {
+                    document.getElementById('notification-dropdown').classList.add('hidden');
+                }
+            });
         });
     </script>
     @stack('scripts')

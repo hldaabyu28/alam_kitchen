@@ -59,6 +59,10 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::middleware('auth')->group(function () {
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+});
+
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD ROUTES — diproteksi berdasarkan role

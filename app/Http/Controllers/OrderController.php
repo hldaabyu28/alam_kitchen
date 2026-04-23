@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Discount;
 use App\Models\OrderItem;
 use App\Mail\OrderStatusUpdated;
+use App\Models\User;
+use App\Notifications\NewOrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -111,6 +113,12 @@ class OrderController extends Controller
 
                 foreach ($itemsData as $itemData) {
                     $order->items()->create($itemData);
+                }
+
+                // Notify Admin & Super Admin
+                $admins = User::role(['admin', 'super_admin', 'kasir'])->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewOrderNotification($order));
                 }
 
                 return $order;

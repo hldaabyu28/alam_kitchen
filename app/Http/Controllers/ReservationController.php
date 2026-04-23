@@ -7,6 +7,8 @@ use App\Models\MenuCategory;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Table;
+use App\Models\User;
+use App\Notifications\NewReservationNotification;
 use App\Mail\ReservationStatusUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +95,12 @@ class ReservationController extends Controller
 
         $reservation = Reservation::create($validated);
 
+        // Notify Admin & Super Admin
+        $admins = User::role(['admin', 'super_admin'])->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new NewReservationNotification($reservation));
+        }
+
         // Update table status to reserved
         $table->update(['status' => 'reserved']);
 
@@ -157,6 +165,12 @@ class ReservationController extends Controller
                 $rsvData['end_time'] = \Carbon\Carbon::parse($startDateTime)->addHours(2);
 
                 $reservation = Reservation::create($rsvData);
+
+                // Notify Admin & Super Admin
+                $admins = User::role(['admin', 'super_admin', 'kasir'])->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewReservationNotification($reservation));
+                }
 
                 // Update table status to reserved
                 $table->update(['status' => 'reserved']);
