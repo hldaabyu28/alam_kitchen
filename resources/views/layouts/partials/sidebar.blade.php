@@ -120,6 +120,7 @@
         </div>
 
         <!-- General Section -->
+        @if($role === 'admin' || $role === 'super_admin' )
         <div>
             <p class="text-xs text-gray-500 uppercase tracking-wider mb-3">General</p>
             <nav class="space-y-1">
@@ -153,6 +154,8 @@
 
             </nav>
         </div>
+        @endif
+
     </div>
 
     <!-- Dark Mode Toggle & Logout -->
