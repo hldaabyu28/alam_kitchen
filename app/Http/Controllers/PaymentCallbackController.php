@@ -65,6 +65,7 @@ class PaymentCallbackController extends Controller
     public function finish(Request $request)
     {
         $orderId = $request->query('order_id');
+        $payment = null;
         
         if ($orderId) {
             try {
@@ -105,6 +106,6 @@ class PaymentCallbackController extends Controller
             }
         }
 
-        return view('landing.payment-finish');
+        return view('landing.payment-finish', compact('payment'));
     }
 }
