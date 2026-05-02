@@ -71,6 +71,11 @@ class MidtransService
             ],
             'customer_details'    => $customerDetails,
             'item_details'        => $itemDetails,
+            'callbacks'           => [
+                'finish'   => route('payment.finish'),
+                'error'    => route('landing'),
+                'unfinish' => route('landing')
+            ]
         ];
 
         try {

@@ -61,4 +61,50 @@ class PaymentCallbackController extends Controller
 
         return response()->json(['message' => 'OK']);
     }
+
+    public function finish(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        
+        if ($orderId) {
+            try {
+                $statusResponse = \Midtrans\Transaction::status($orderId);
+                
+                $payment = Payment::where('gateway_order_id', $orderId)->first();
+                if ($payment) {
+                    $order = $payment->order;
+                    $status = $statusResponse->transaction_status;
+
+                    switch ($status) {
+                        case 'capture':
+                        case 'settlement':
+                            $payment->status = 'paid';
+                            if (!$payment->paid_at) {
+                                $payment->paid_at = now();
+                            }
+                            $order->payment_status = 'paid';
+                            break;
+
+                        case 'pending':
+                            $payment->status = 'pending';
+                            break;
+
+                        case 'expire':
+                        case 'cancel':
+                        case 'deny':
+                            $payment->status = 'failed';
+                            $order->payment_status = 'failed';
+                            break;
+                    }
+
+                    $payment->save();
+                    $order->save();
+                }
+            } catch (\Exception $e) {
+                Log::error('Midtrans status check error on finish redirect: ' . $e->getMessage());
+            }
+        }
+
+        return view('landing.payment-finish');
+    }
 }

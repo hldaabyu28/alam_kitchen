@@ -45,9 +45,7 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 // Payment Callbacks & Webhooks
 Route::post('/payment/midtrans-callback', [PaymentCallbackController::class, 'handleNotification'])->name('payment.callback');
-Route::get('/payment/finish', function () {
-    return view('landing.payment-finish');
-})->name('payment.finish');
+Route::get('/payment/finish', [PaymentCallbackController::class, 'finish'])->name('payment.finish');
 
 // Public order checkout (no auth required)
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
