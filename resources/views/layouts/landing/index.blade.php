@@ -1216,9 +1216,18 @@
                 <span>Diskon</span>
                 <span id="checkout-discount-value">- Rp 0</span>
             </div>`;
+            const taxRate = {{ $taxRate }};
+            const tax = Math.round(total * (taxRate / 100));
+            const finalTotal = total + tax;
+
+            summaryHtml += `<div class="flex justify-between text-sm pt-1">
+                <span>Pajak (${taxRate}%)</span>
+                <span>Rp ${tax.toLocaleString('id-ID')}</span>
+            </div>`;
+
             summaryHtml += `<div class="flex justify-between font-bold text-sm border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                 <span>Total</span>
-                <span id="checkout-total-value">Rp ${total.toLocaleString('id-ID')}</span>
+                <span id="checkout-total-value">Rp ${finalTotal.toLocaleString('id-ID')}</span>
             </div>`;
             window.checkoutSubtotal = total;
             document.getElementById('checkout-promo-input').value = '';
@@ -1439,8 +1448,21 @@
             });
 
             container.innerHTML = html;
+            const taxRate = {{ $taxRate }};
+            const tax = Math.round(total * (taxRate / 100));
+            const finalTotal = total + tax;
+
+            let taxRow = document.getElementById('booking-tax-row');
+            if (!taxRow) {
+                taxRow = document.createElement('div');
+                taxRow.id = 'booking-tax-row';
+                taxRow.className = 'flex justify-between text-sm pt-1';
+                totalEl.parentNode.insertBefore(taxRow, totalEl);
+            }
+            taxRow.innerHTML = `<span>Pajak (${taxRate}%)</span> <span>Rp ${tax.toLocaleString('id-ID')}</span>`;
+
             totalEl.classList.remove('hidden');
-            totalVal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+            totalVal.textContent = `Rp ${finalTotal.toLocaleString('id-ID')}`;
             inputsContainer.innerHTML = hiddenInputs;
 
             document.getElementById('booking-promo-section').classList.remove('hidden');
@@ -1527,7 +1549,28 @@
                 rowEl.classList.remove('hidden');
                 valEl.textContent = `- Rp ${discAmt.toLocaleString('id-ID')}`;
 
-                const finalTotal = window.checkoutSubtotal - discAmt;
+                const taxRate = {{ $taxRate }};
+                const subAfterDisc = window.checkoutSubtotal - discAmt;
+                const tax = Math.round(subAfterDisc * (taxRate / 100));
+                const finalTotal = subAfterDisc + tax;
+
+                let taxEl = document.getElementById('checkout-tax-value');
+                if (!taxEl) {
+                    // If summary is re-rendered, we need to handle it. 
+                    // But openCheckoutModal already adds it. Let's just update the text in the summary if it exists.
+                    const summary = document.getElementById('checkout-summary');
+                    const taxRow = Array.from(summary.children).find(el => el.textContent.includes('Pajak'));
+                    if (taxRow) {
+                        taxEl = taxRow.lastElementChild;
+                    }
+                }
+                
+                if (taxEl) {
+                    taxEl.textContent = `Rp ${tax.toLocaleString('id-ID')}`;
+                } else {
+                    // Fallback: re-render summary or just update the total
+                }
+
                 totalEl.textContent = `Rp ${finalTotal.toLocaleString('id-ID')}`;
             }
         }
@@ -1566,7 +1609,16 @@
                 rowEl.classList.remove('hidden');
                 valEl.textContent = `- Rp ${discAmt.toLocaleString('id-ID')}`;
 
-                const finalTotal = window.bookingSubtotal - discAmt;
+                const taxRate = {{ $taxRate }};
+                const subAfterDisc = window.bookingSubtotal - discAmt;
+                const tax = Math.round(subAfterDisc * (taxRate / 100));
+                const finalTotal = subAfterDisc + tax;
+
+                const taxRow = document.getElementById('booking-tax-row');
+                if (taxRow) {
+                    taxRow.innerHTML = `<span>Pajak (${taxRate}%)</span> <span>Rp ${tax.toLocaleString('id-ID')}</span>`;
+                }
+
                 totalEl.textContent = `Rp ${finalTotal.toLocaleString('id-ID')}`;
             }
         }

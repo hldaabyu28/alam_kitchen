@@ -37,6 +37,9 @@ class LandingController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('layouts.landing.index', compact('menus', 'categories', 'tables', 'store', 'faqs', 'isOpen'));
+        $activeTax = \App\Models\Tax::where('is_active', true)->first();
+        $taxRate = $activeTax ? $activeTax->rate : 0;
+
+        return view('layouts.landing.index', compact('menus', 'categories', 'tables', 'store', 'faqs', 'isOpen', 'taxRate'));
     }
 }

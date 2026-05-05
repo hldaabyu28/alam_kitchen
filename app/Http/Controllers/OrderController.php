@@ -95,6 +95,11 @@ class OrderController extends Controller
                     }
                 }
 
+                $activeTax = \App\Models\Tax::where('is_active', true)->first();
+                $taxRate = $activeTax ? $activeTax->rate : 0;
+                $taxAmount = round(($subtotal - $discountAmount) * ($taxRate / 100));
+                $totalAmount = ($subtotal - $discountAmount) + $taxAmount;
+
                 $order = Order::create([
                     'order_number'    => Order::generateOrderNumber(),
                     'customer_name'   => $validated['customer_name'],
@@ -105,8 +110,8 @@ class OrderController extends Controller
                     'subtotal'        => $subtotal,
                     'discount_amount' => $discountAmount,
                     'discount_id'     => $discountId,
-                    'tax_amount'      => 0,
-                    'total_amount'    => $subtotal - $discountAmount,
+                    'tax_amount'      => $taxAmount,
+                    'total_amount'    => $totalAmount,
                     'status'          => 'pending',
                     'payment_status'  => 'unpaid',
                 ]);

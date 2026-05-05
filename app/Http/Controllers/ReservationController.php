@@ -229,6 +229,11 @@ class ReservationController extends Controller
                         }
                     }
 
+                    $activeTax = \App\Models\Tax::where('is_active', true)->first();
+                    $taxRate = $activeTax ? $activeTax->rate : 0;
+                    $taxAmount = round(($subtotal - $discountAmount) * ($taxRate / 100));
+                    $totalAmount = ($subtotal - $discountAmount) + $taxAmount;
+
                     $order = Order::create([
                         'order_number'    => Order::generateOrderNumber(),
                         'reservation_id'  => $reservation->id,
@@ -240,8 +245,8 @@ class ReservationController extends Controller
                         'subtotal'        => $subtotal,
                         'discount_amount' => $discountAmount,
                         'discount_id'     => $discountId,
-                        'tax_amount'      => 0,
-                        'total_amount'    => $subtotal - $discountAmount,
+                        'tax_amount'      => $taxAmount,
+                        'total_amount'    => $totalAmount,
                         'status'          => 'confirmed',
                         'payment_status'  => 'unpaid',
                         'payment_method'  => 'cash',
@@ -396,7 +401,10 @@ class ReservationController extends Controller
                 }
 
                 $discountAmount = min($validated['discount_amount'] ?? 0, $subtotal);
-                $totalAmount = $subtotal - $discountAmount;
+                $activeTax = \App\Models\Tax::where('is_active', true)->first();
+                $taxRate = $activeTax ? $activeTax->rate : 0;
+                $taxAmount = round(($subtotal - $discountAmount) * ($taxRate / 100));
+                $totalAmount = ($subtotal - $discountAmount) + $taxAmount;
 
                 $order = Order::create([
                     'order_number'    => Order::generateOrderNumber(),
@@ -409,7 +417,7 @@ class ReservationController extends Controller
                     'notes'           => $validated['notes'] ?? null,
                     'subtotal'        => $subtotal,
                     'discount_amount' => $discountAmount,
-                    'tax_amount'      => 0,
+                    'tax_amount'      => $taxAmount,
                     'total_amount'    => $totalAmount,
                     'status'          => $validated['status'],
                     'payment_status'  => $validated['payment_status'],
