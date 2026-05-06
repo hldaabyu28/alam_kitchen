@@ -17,6 +17,33 @@ class DashboardController extends Controller
         $totalUsers = User::count();
         $totalMenu = Menu::count();
 
+        // 1. Daily Revenue (last 7 days)
+        $last7Days = collect();
+        $maxRevenue = 0;
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $revenue = Order::whereDate('created_at', $date)
+                ->where('payment_status', 'paid')
+                ->sum('total_amount');
+
+            $maxRevenue = max($maxRevenue, $revenue);
+
+            $last7Days->push([
+                'day' => $date->format('D'), // Mon, Tue...
+                'date' => $date->format('d M'),
+                'revenue' => $revenue,
+                'percentage' => 0 // calculated later
+            ]);
+        }
+
+        if ($maxRevenue > 0) {
+            $last7Days->transform(function ($item) use ($maxRevenue) {
+                $item['percentage'] = ($item['revenue'] / $maxRevenue) * 100;
+                return $item;
+            });
+        }
+
         // Orders today
         $ordersTodayCount = Order::whereDate('created_at', Carbon::today())->count();
 
@@ -35,7 +62,9 @@ class DashboardController extends Controller
 
         // Recent Orders
         $recentOrders = Order::with('items')->orderBy('created_at', 'desc')->take(5)->get();
-
+        $labels = $last7Days->pluck('day'); // Mon, Tue, dst
+        $revenues = $last7Days->pluck('revenue'); // angka revenue
+        $dates = $last7Days->pluck('date'); // optional (buat tooltip)
         $data = compact(
             'totalUsers',
             'totalMenu',
@@ -44,7 +73,11 @@ class DashboardController extends Controller
             'revenueThisMonth',
             'pendingOrders',
             'runningOrders',
-            'recentOrders'
+            'recentOrders',
+            'last7Days',
+            'labels',
+            'revenues',
+            'dates'
         );
 
         if ($user->hasRole('super_admin')) {

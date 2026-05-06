@@ -108,50 +108,8 @@
     <!-- Sales Analytics Chart -->
     <div
         class="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-lg border border-gray-200 dark:border-gray-800">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold">Analisis Penjualan</h3>
-            <select
-                class="px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm">
-                <option>Minggu Ini</option>
-                <option>Bulan Ini</option>
-                <option>Tahun Ini</option>
-            </select>
-        </div>
-
-        <!-- Chart Bars -->
-        <div class="flex items-end justify-between gap-2 h-64">
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-20 bg-gray-200 dark:bg-gray-800 pattern-dots rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">S</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-32 bg-emerald-600 rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">M</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-28 bg-emerald-500 rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">T</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-48 bg-emerald-700 rounded-t-xl relative">
-                    <span
-                        class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-semibold bg-emerald-700 text-white px-2 py-1 rounded">75%</span>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">W</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-24 bg-gray-200 dark:bg-gray-800 pattern-dots rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">T</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-16 bg-gray-200 dark:bg-gray-800 pattern-dots rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">F</p>
-            </div>
-            <div class="flex-1 flex flex-col items-center">
-                <div class="w-full h-12 bg-gray-200 dark:bg-gray-800 pattern-dots rounded-t-xl"></div>
-                <p class="text-xs text-gray-500 mt-2">S</p>
-            </div>
-        </div>
+        <h3 class="text-xl font-bold mb-6">Pendapatan 7 Hari Terakhir</h3>
+        <canvas id="revenueChart" height="100"></canvas>
     </div>
 
     <!-- Revenue Card -->
@@ -266,3 +224,69 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+
+    // Gradient (biar modern)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, '#10b981');
+    gradient.addColorStop(1, '#34d399');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Pendapatan',
+                data: @json($revenues),
+                backgroundColor: gradient,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return @json($dates)[context[0].dataIndex];
+                        },
+                        label: function(context) {
+                            return 'Rp ' + context.raw.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#9ca3af'
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#9ca3af',
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+@endpush
