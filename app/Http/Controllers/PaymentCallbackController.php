@@ -15,6 +15,8 @@ class PaymentCallbackController extends Controller
     {
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
     }
 
     public function handleNotification(Request $request)
@@ -39,19 +41,27 @@ class PaymentCallbackController extends Controller
         switch ($status) {
             case 'capture':
             case 'settlement':
-                $payment->status = 'paid';
+                $payment->status = $status;
                 $payment->paid_at = now();
                 $order->payment_status = 'paid';
                 break;
-
+            
             case 'pending':
                 $payment->status = 'pending';
                 break;
-
+            
             case 'expire':
+                $payment->status = 'expire';
+                $order->payment_status = 'expired';
+                break;
+
             case 'cancel':
+                $payment->status = 'cancel';
+                $order->payment_status = 'failed';
+                break;
+
             case 'deny':
-                $payment->status = 'failed';
+                $payment->status = 'deny';
                 $order->payment_status = 'failed';
                 break;
         }
@@ -79,7 +89,7 @@ class PaymentCallbackController extends Controller
                     switch ($status) {
                         case 'capture':
                         case 'settlement':
-                            $payment->status = 'paid';
+                            $payment->status = $status;
                             if (!$payment->paid_at) {
                                 $payment->paid_at = now();
                             }
@@ -91,9 +101,17 @@ class PaymentCallbackController extends Controller
                             break;
 
                         case 'expire':
+                            $payment->status = 'expire';
+                            $order->payment_status = 'expired';
+                            break;
+
                         case 'cancel':
+                            $payment->status = 'cancel';
+                            $order->payment_status = 'failed';
+                            break;
+
                         case 'deny':
-                            $payment->status = 'failed';
+                            $payment->status = 'deny';
                             $order->payment_status = 'failed';
                             break;
                     }

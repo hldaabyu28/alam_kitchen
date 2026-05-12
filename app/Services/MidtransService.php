@@ -66,7 +66,7 @@ class MidtransService
 
         $params = [
             'transaction_details' => [
-                'order_id'     => $order->order_number . '-' . time(), // Unique constraint workaround if same order retries
+                'order_id'     => $order->order_number,
                 'gross_amount' => (int) $order->total_amount,
             ],
             'customer_details'    => $customerDetails,
@@ -75,7 +75,8 @@ class MidtransService
                 'finish'   => route('payment.finish'),
                 'error'    => route('landing'),
                 'unfinish' => route('landing')
-            ]
+            ],
+            'notification_url'    => route('payment.callback')
         ];
 
         try {
