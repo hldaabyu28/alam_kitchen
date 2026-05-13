@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\MenuCategory;
 use App\Models\Order;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -81,7 +82,7 @@ class TransactionController extends Controller
                 }
 
                 $discountAmount = min($validated['discount_amount'] ?? 0, $subtotal);
-                
+
                 $activeTax = \App\Models\Tax::where('is_active', true)->first();
                 $taxRate = $activeTax ? $activeTax->rate : 0;
                 $taxAmount = round(($subtotal - $discountAmount) * ($taxRate / 100));
@@ -128,7 +129,7 @@ class TransactionController extends Controller
             if ($validated['payment_method'] === 'midtrans') {
                 $midtrans = new \App\Services\MidtransService();
                 $payment = $midtrans->createSnapTransaction($order);
-                
+
                 if ($payment && $payment->snap_token) {
                     return redirect()->back()->with([
                         'success'          => "Transaksi #{$order->order_number} dibuat. Menunggu pembayaran...",
@@ -182,7 +183,7 @@ class TransactionController extends Controller
         } else {
             $store = \App\Models\Store::create(['name' => 'Default Store', 'is_active' => true]);
         }
-        
+
         $statusText = $store->is_active ? 'Buka' : 'Tutup';
         return redirect()->back()->with('success', "Status toko berhasil diubah menjadi {$statusText}.");
     }
@@ -192,7 +193,8 @@ class TransactionController extends Controller
      */
     public function print(Order $order)
     {
+        $store = Store::first();
         $order->load(['items', 'user']);
-        return view('transaksi.print', compact('order'));
+        return view('transaksi.print', compact('order', 'store'));
     }
 }

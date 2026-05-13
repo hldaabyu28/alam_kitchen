@@ -1,46 +1,107 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk Transaksi #{{ $order->order_number }}</title>
     <style>
-        @page { margin: 0; }
-        body { 
+        @page {
+            margin: 0;
+        }
+
+        body {
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
             color: #000;
-            width: 58mm; /* standard thermal printer width */
+            width: 58mm;
+            /* standard thermal printer width */
             margin: 0 auto;
             padding: 10px;
         }
-        h2 { font-size: 16px; margin: 0; }
-        p { margin: 3px 0; font-size: 10px; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: bold; }
-        .border-top { border-top: 1px dashed #000; padding-top: 5px; margin-top: 5px; }
-        .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
-        .w-full { width: 100%; }
-        .mb-2 { margin-bottom: 10px; }
-        .mt-2 { margin-top: 10px; }
-        .flex { display: flex; }
-        .justify-between { justify-content: space-between; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        td { vertical-align: top; }
-        .item-name { width: 100%; display: block; }
-        
+
+        h2 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        p {
+            margin: 3px 0;
+            font-size: 10px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .border-top {
+            border-top: 1px dashed #000;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+
+        .border-bottom {
+            border-bottom: 1px dashed #000;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .mb-2 {
+            margin-bottom: 10px;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        .item-name {
+            width: 100%;
+            display: block;
+        }
+
         @media print {
-            body { width: 100%; padding: 0; }
+            body {
+                width: 100%;
+                padding: 0;
+            }
         }
     </style>
 </head>
+
 <body onload="window.print();">
 
     <div class="text-center border-bottom mb-2">
-        <h2>Alam Kitchen</h2>
-        <p>Jl. Contoh Alamat No. 123<br>Telp: 08123456789</p>
+        <h2>{{ $store->name }}</h2>
+        <p>{{ $store->address }}<br>Telp: {{ $store->phone }}</p>
     </div>
 
     <div style="margin-bottom: 5px;">
@@ -117,4 +178,5 @@
     </div>
 
 </body>
+
 </html>
